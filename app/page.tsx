@@ -1,7 +1,12 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { sites } from '@/lib/data';
 
 export default function Home() {
+  const [expandedWaterRisk, setExpandedWaterRisk] = useState<string | null>(null);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Submitted':
@@ -16,15 +21,15 @@ export default function Home() {
   };
 
   const getWaterRiskColor = (risk: number) => {
-    if (risk >= 4) return 'text-red-600';
-    if (risk === 3) return 'text-yellow-600';
-    return 'text-green-600';
+    if (risk >= 4) return 'text-red-500';
+    if (risk === 3) return 'text-yellow-500';
+    return 'text-green-500';
   };
 
   const getWaterRiskLabel = (risk: number) => {
-    if (risk >= 4) return 'High Risk';
-    if (risk === 3) return 'Medium Risk';
-    return 'Low Risk';
+    if (risk >= 4) return 'High';
+    if (risk === 3) return 'Medium';
+    return 'Low';
   };
 
   return (
@@ -78,8 +83,13 @@ export default function Home() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Water Risk
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <span className="flex items-center gap-1 justify-center">
+                    <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" />
+                    </svg>
+                    Risk
+                  </span>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
@@ -114,15 +124,39 @@ export default function Home() {
                       {site.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xl ${getWaterRiskColor(site.waterRisk)}`}>
-                        {'💧'.repeat(site.waterRisk)}
-                      </span>
-                      <span className={`text-xs font-medium ${getWaterRiskColor(site.waterRisk)}`}>
-                        {getWaterRiskLabel(site.waterRisk)}
-                      </span>
-                    </div>
+                  <td className="px-6 py-4 whitespace-nowrap text-center relative">
+                    <button
+                      onClick={() => setExpandedWaterRisk(expandedWaterRisk === site.id ? null : site.id)}
+                      className={`inline-flex items-center gap-1 text-sm font-medium ${getWaterRiskColor(site.waterRisk)} hover:opacity-75 transition`}
+                      title="Click for details"
+                    >
+                      <span className="text-base">💧</span>
+                      <span>{site.waterRisk}</span>
+                    </button>
+                    {expandedWaterRisk === site.id && (
+                      <div className="absolute z-10 right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border p-3 text-left">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span>{'💧'.repeat(site.waterRisk)}</span>
+                          <span className={`text-sm font-bold ${getWaterRiskColor(site.waterRisk)}`}>
+                            {getWaterRiskLabel(site.waterRisk)} Risk
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600">
+                          {site.waterRisk >= 4 && 'High water stress area. Monitor closely.'}
+                          {site.waterRisk === 3 && 'Moderate water stress. Review mitigation plans.'}
+                          {site.waterRisk < 3 && 'Low water stress. Continue monitoring.'}
+                        </p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setExpandedWaterRisk(null);
+                          }}
+                          className="mt-2 text-xs text-gray-400 hover:text-gray-600"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <Link
