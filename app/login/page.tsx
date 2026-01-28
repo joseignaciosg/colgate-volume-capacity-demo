@@ -13,7 +13,7 @@ export default function LoginPage() {
     e.preventDefault();
     
     // Simple auth - enhance with proper backend later
-    if (username === 'colgate' && password === 'colgate2024') {
+    if (username === 'ceci' && password === '17289ohldasjlhdaus7d891!') {
       localStorage.setItem('authenticated', 'true');
       localStorage.setItem('username', username);
       router.push('/');

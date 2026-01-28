@@ -5,26 +5,57 @@ import Link from 'next/link';
 import { sites, skus } from '@/lib/data';
 import { useParams } from 'next/navigation';
 
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+interface SKUVolume {
+  id: string;
+  sku: string;
+  volumes: { [key: string]: string };
+}
+
 export default function SitePage() {
   const params = useParams();
   const siteId = params.id as string;
   const site = sites.find((s) => s.id === siteId);
 
-  const [formData, setFormData] = useState({
-    product: skus[0],
-    q1: '',
-    q2: '',
-    q3: '',
-    q4: '',
-    capacityUtilization: '',
-    notes: '',
+  const createEmptySKURow = (): SKUVolume => ({
+    id: Math.random().toString(36).substr(2, 9),
+    sku: skus[0],
+    volumes: months.reduce((acc, m) => ({ ...acc, [m]: '' }), {}),
   });
 
+  const [skuRows, setSkuRows] = useState<SKUVolume[]>([createEmptySKURow()]);
+  const [capacityUtilization, setCapacityUtilization] = useState('');
+  const [notes, setNotes] = useState('');
   const [saved, setSaved] = useState(false);
 
   if (!site) {
     return <div>Site not found</div>;
   }
+
+  const addSKURow = () => {
+    if (skuRows.length < 20) {
+      setSkuRows([...skuRows, createEmptySKURow()]);
+    }
+  };
+
+  const removeSKURow = (id: string) => {
+    if (skuRows.length > 1) {
+      setSkuRows(skuRows.filter((row) => row.id !== id));
+    }
+  };
+
+  const updateSKU = (id: string, sku: string) => {
+    setSkuRows(skuRows.map((row) => (row.id === id ? { ...row, sku } : row)));
+  };
+
+  const updateVolume = (id: string, month: string, value: string) => {
+    setSkuRows(
+      skuRows.map((row) =>
+        row.id === id ? { ...row, volumes: { ...row.volumes, [month]: value } } : row
+      )
+    );
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,11 +69,17 @@ export default function SitePage() {
     return 'text-green-600 bg-green-50';
   };
 
-  const totalVolume =
-    (parseInt(formData.q1) || 0) +
-    (parseInt(formData.q2) || 0) +
-    (parseInt(formData.q3) || 0) +
-    (parseInt(formData.q4) || 0);
+  const calculateRowTotal = (row: SKUVolume): number => {
+    return Object.values(row.volumes).reduce((sum, v) => sum + (parseFloat(v) || 0), 0);
+  };
+
+  const totalVolume = skuRows.reduce((sum, row) => sum + calculateRowTotal(row), 0);
+
+  const clearForm = () => {
+    setSkuRows([createEmptySKURow()]);
+    setCapacityUtilization('');
+    setNotes('');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -80,7 +117,7 @@ export default function SitePage() {
           </div>
         </div>
 
-        {site.waterRisk >= 4 && totalVolume > 400000 && (
+        {site.waterRisk >= 4 && totalVolume > 5000 && (
           <div className="bg-red-50 border-l-4 border-red-600 p-4 mb-6">
             <div className="flex">
               <div className="flex-shrink-0">
@@ -101,7 +138,7 @@ export default function SitePage() {
                   Sustainability Alert: High Volume + High Water Risk
                 </h3>
                 <p className="mt-1 text-sm text-red-700">
-                  This site has high planned volumes ({totalVolume.toLocaleString()} units) in a
+                  This site has high planned volumes ({totalVolume.toLocaleString()} tons) in a
                   high water-risk area. Consider capacity redistribution or water efficiency
                   measures.
                 </p>
@@ -111,7 +148,12 @@ export default function SitePage() {
         )}
 
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Volume Planning</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Volume Planning</h2>
+            <div className="text-sm text-gray-500">
+              {skuRows.length}/20 SKUs
+            </div>
+          </div>
 
           {saved && (
             <div className="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-700">
@@ -120,112 +162,146 @@ export default function SitePage() {
           )}
 
           <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-6">
+            <div className="space-y-6">
+              {/* SKU Volume Table */}
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b min-w-[180px]">
+                        SKU
+                      </th>
+                      {months.map((month) => (
+                        <th
+                          key={month}
+                          className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b min-w-[70px]"
+                        >
+                          {month}
+                        </th>
+                      ))}
+                      <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b min-w-[80px]">
+                        Total
+                      </th>
+                      <th className="px-2 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b w-[50px]">
+                        
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {skuRows.map((row, index) => (
+                      <tr key={row.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="px-3 py-2 border-b">
+                          <select
+                            value={row.sku}
+                            onChange={(e) => updateSKU(row.id, e.target.value)}
+                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                          >
+                            {skus.map((sku) => (
+                              <option key={sku} value={sku}>
+                                {sku}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        {months.map((month) => (
+                          <td key={month} className="px-1 py-2 border-b">
+                            <input
+                              type="number"
+                              step="0.1"
+                              min="0"
+                              value={row.volumes[month]}
+                              onChange={(e) => updateVolume(row.id, month, e.target.value)}
+                              className="w-full px-2 py-1.5 text-sm text-center border border-gray-300 rounded focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                              placeholder="0"
+                            />
+                          </td>
+                        ))}
+                        <td className="px-3 py-2 border-b text-center font-medium text-sm">
+                          {calculateRowTotal(row).toFixed(1)}
+                        </td>
+                        <td className="px-2 py-2 border-b text-center">
+                          {skuRows.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeSKURow(row.id)}
+                              className="text-red-500 hover:text-red-700 text-lg font-bold"
+                              title="Remove SKU"
+                            >
+                              ×
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="bg-blue-50 font-medium">
+                      <td className="px-3 py-3 border-t text-sm text-blue-900">
+                        Total (tons)
+                      </td>
+                      {months.map((month) => {
+                        const monthTotal = skuRows.reduce(
+                          (sum, row) => sum + (parseFloat(row.volumes[month]) || 0),
+                          0
+                        );
+                        return (
+                          <td key={month} className="px-1 py-3 border-t text-center text-sm text-blue-900">
+                            {monthTotal > 0 ? monthTotal.toFixed(1) : '-'}
+                          </td>
+                        );
+                      })}
+                      <td className="px-3 py-3 border-t text-center text-blue-900 font-bold">
+                        {totalVolume.toFixed(1)}
+                      </td>
+                      <td className="px-2 py-3 border-t"></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Add SKU Button */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Product SKU
-                </label>
-                <select
-                  value={formData.product}
-                  onChange={(e) => setFormData({ ...formData, product: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                <button
+                  type="button"
+                  onClick={addSKURow}
+                  disabled={skuRows.length >= 20}
+                  className="px-4 py-2 text-sm font-medium text-[#ED1C24] border border-[#ED1C24] rounded-lg hover:bg-red-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {skus.map((product) => (
-                    <option key={product} value={product}>
-                      {product}
-                    </option>
-                  ))}
-                </select>
+                  + Add SKU Row
+                </button>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Capacity & Notes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Q1 Volume (units)
+                    Capacity Utilization (%)
                   </label>
                   <input
                     type="number"
-                    value={formData.q1}
-                    onChange={(e) => setFormData({ ...formData, q1: e.target.value })}
+                    min="0"
+                    max="100"
+                    value={capacityUtilization}
+                    onChange={(e) => setCapacityUtilization(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
-                    placeholder="0"
+                    placeholder="0-100"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Q2 Volume (units)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.q2}
-                    onChange={(e) => setFormData({ ...formData, q2: e.target.value })}
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    rows={2}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Q3 Volume (units)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.q3}
-                    onChange={(e) => setFormData({ ...formData, q3: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Q4 Volume (units)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.q4}
-                    onChange={(e) => setFormData({ ...formData, q4: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
-                    placeholder="0"
+                    placeholder="Add any relevant notes..."
                   />
                 </div>
               </div>
 
-              {totalVolume > 0 && (
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <p className="text-sm font-medium text-blue-900">
-                    Total Annual Volume: {totalVolume.toLocaleString()} units
-                  </p>
-                </div>
-              )}
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Capacity Utilization (%)
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  max="100"
-                  value={formData.capacityUtilization}
-                  onChange={(e) =>
-                    setFormData({ ...formData, capacityUtilization: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
-                  placeholder="0-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
-                  placeholder="Add any relevant notes or comments..."
-                />
-              </div>
-
-              <div className="flex gap-4">
+              {/* Buttons */}
+              <div className="flex gap-4 pt-4">
                 <button
                   type="submit"
                   className="px-6 py-3 bg-[#ED1C24] text-white rounded-lg hover:bg-red-700 transition font-medium"
@@ -234,17 +310,7 @@ export default function SitePage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() =>
-                    setFormData({
-                      product: skus[0],
-                      q1: '',
-                      q2: '',
-                      q3: '',
-                      q4: '',
-                      capacityUtilization: '',
-                      notes: '',
-                    })
-                  }
+                  onClick={clearForm}
                   className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition font-medium"
                 >
                   Clear Form
