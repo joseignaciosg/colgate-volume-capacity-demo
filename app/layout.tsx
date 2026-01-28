@@ -1,22 +1,31 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
-
-export const metadata: Metadata = {
-  title: 'Colgate Volume & Capacity Planning',
-  description: 'Demo app for Colgate Volume & Capacity Planning process',
-};
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    // Skip auth check for login page
+    if (pathname === '/login') return;
+
+    // Check authentication
+    const isAuthenticated = localStorage.getItem('authenticated');
+    if (!isAuthenticated) {
+      router.push('/login');
+    }
+  }, [pathname, router]);
+
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

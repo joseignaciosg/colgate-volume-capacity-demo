@@ -8,20 +8,29 @@ export interface Site {
   waterRisk: 1 | 2 | 3 | 4 | 5;
 }
 
-export interface VolumeData {
+export interface MonthlyVolumeData {
   siteId: string;
-  product: string;
-  q1: number;
-  q2: number;
-  q3: number;
-  q4: number;
-  capacityUtilization: number;
+  sku: string;
+  jan: number;
+  feb: number;
+  mar: number;
+  apr: number;
+  may: number;
+  jun: number;
+  jul: number;
+  aug: number;
+  sep: number;
+  oct: number;
+  nov: number;
+  dec: number;
+  unit: 'tons'; // Always tons per month
   notes: string;
 }
 
 export interface PutsTakes {
   id: string;
   siteId: string;
+  sku: string;
   date: string;
   reason: 'Product transfer' | 'Capacity expansion' | 'Demand change' | 'Supply issue';
   oldValue: number;
@@ -122,73 +131,57 @@ export const sites: Site[] = [
   },
 ];
 
-export const products = [
+export const skus = [
   'Colgate Total',
   'Max Fresh',
   'Sensitive',
   'elmex',
   'meridol',
+  'Optic White',
+  'Kids',
+  'Natural Extracts',
+  'Triple Action',
+  'Total Advanced',
 ];
 
-export const mockVolumeData: VolumeData[] = [
+export const mockMonthlyData: MonthlyVolumeData[] = [
   {
     siteId: 'cali',
-    product: 'Colgate Total',
-    q1: 125000,
-    q2: 130000,
-    q3: 135000,
-    q4: 140000,
-    capacityUtilization: 78,
-    notes: 'Increased demand expected in Q4',
-  },
-  {
-    siteId: 'sao-bernardo',
-    product: 'Max Fresh',
-    q1: 95000,
-    q2: 98000,
-    q3: 100000,
-    q4: 105000,
-    capacityUtilization: 82,
+    sku: 'Colgate Total',
+    jan: 42, feb: 43, mar: 44, apr: 45, may: 46, jun: 47,
+    jul: 48, aug: 49, sep: 50, oct: 51, nov: 52, dec: 53,
+    unit: 'tons',
     notes: '',
   },
-  // Add more as needed
+  {
+    siteId: 'cali',
+    sku: 'Max Fresh',
+    jan: 32, feb: 33, mar: 34, apr: 35, may: 36, jun: 37,
+    jul: 38, aug: 39, sep: 40, oct: 41, nov: 42, dec: 43,
+    unit: 'tons',
+    notes: '',
+  },
 ];
 
 export const mockPutsTakes: PutsTakes[] = [
   {
     id: '1',
     siteId: 'cali',
+    sku: 'Colgate Total',
     date: '2024-01-15',
     reason: 'Product transfer',
-    oldValue: 120000,
-    newValue: 125000,
+    oldValue: 42,
+    newValue: 45,
     requestedBy: 'Maria Santos',
   },
   {
     id: '2',
     siteId: 'guangzhou',
+    sku: 'Max Fresh',
     date: '2024-01-20',
     reason: 'Capacity expansion',
-    oldValue: 80000,
-    newValue: 95000,
+    oldValue: 30,
+    newValue: 35,
     requestedBy: 'Wei Chen',
-  },
-  {
-    id: '3',
-    siteId: 'morristown',
-    date: '2024-02-01',
-    reason: 'Demand change',
-    oldValue: 110000,
-    newValue: 105000,
-    requestedBy: 'John Smith',
-  },
-  {
-    id: '4',
-    siteId: 'mumbai',
-    date: '2024-02-10',
-    reason: 'Supply issue',
-    oldValue: 150000,
-    newValue: 140000,
-    requestedBy: 'Priya Patel',
   },
 ];
