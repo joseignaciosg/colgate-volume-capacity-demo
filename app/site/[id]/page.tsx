@@ -236,7 +236,7 @@ export default function SitePage() {
                   type="button"
                   onClick={() =>
                     setFormData({
-                      product: products[0],
+                      product: skus[0],
                       q1: '',
                       q2: '',
                       q3: '',
