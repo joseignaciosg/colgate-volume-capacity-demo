@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { mockPutsTakes, sites } from '@/lib/data';
+import { mockPutsTakes, sites, skus } from '@/lib/data';
 
 export default function PutsTakesPage() {
   const [entries, setEntries] = useState(mockPutsTakes);
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     siteId: sites[0].id,
+    sku: skus[0],
     reason: 'Product transfer' as const,
     oldValue: '',
     newValue: '',
@@ -22,6 +23,7 @@ export default function PutsTakesPage() {
     const newEntry = {
       id: (entries.length + 1).toString(),
       siteId: formData.siteId,
+      sku: formData.sku,
       date: new Date().toISOString().split('T')[0],
       reason: formData.reason,
       oldValue: parseInt(formData.oldValue),
@@ -32,6 +34,7 @@ export default function PutsTakesPage() {
     setShowForm(false);
     setFormData({
       siteId: sites[0].id,
+      sku: skus[0],
       reason: 'Product transfer',
       oldValue: '',
       newValue: '',
@@ -96,6 +99,21 @@ export default function PutsTakesPage() {
                     {sites.map((site) => (
                       <option key={site.id} value={site.id}>
                         {site.name} - {site.location}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">SKU / Product</label>
+                  <select
+                    value={formData.sku}
+                    onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                    required
+                  >
+                    {skus.map((sku) => (
+                      <option key={sku} value={sku}>
+                        {sku}
                       </option>
                     ))}
                   </select>
@@ -181,6 +199,9 @@ export default function PutsTakesPage() {
                   Site
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  SKU / Product
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Reason
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -208,6 +229,9 @@ export default function PutsTakesPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {getSiteName(entry.siteId)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {entry.sku}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span

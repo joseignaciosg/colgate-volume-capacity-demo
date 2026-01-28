@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { sites, products } from '@/lib/data';
+import { sites, skus } from '@/lib/data';
 import { useParams } from 'next/navigation';
 
 export default function SitePage() {
@@ -11,7 +11,7 @@ export default function SitePage() {
   const site = sites.find((s) => s.id === siteId);
 
   const [formData, setFormData] = useState({
-    product: products[0],
+    product: skus[0],
     q1: '',
     q2: '',
     q3: '',
@@ -130,7 +130,7 @@ export default function SitePage() {
                   onChange={(e) => setFormData({ ...formData, product: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
                 >
-                  {products.map((product) => (
+                  {skus.map((product) => (
                     <option key={product} value={product}>
                       {product}
                     </option>

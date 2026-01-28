@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { sites, mockVolumeData, products } from '@/lib/data';
+import { sites, mockMonthlyData, skus } from '@/lib/data';
 import {
   BarChart,
   Bar,
@@ -30,7 +30,7 @@ export default function ConsolidationPage() {
   }, [] as { region: string; siteCount: number; plannedVolume: number }[]);
 
   // Product category data
-  const productData = products.map((product) => ({
+  const productData = skus.map((product) => ({
     product,
     volume: Math.floor(Math.random() * 400000) + 200000, // Mock data
     capacity: Math.floor(Math.random() * 30) + 60, // Mock capacity %
