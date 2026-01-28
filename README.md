@@ -1,36 +1,127 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Colgate Volume & Capacity Planning Demo
 
-## Getting Started
+A professional demo application for Colgate's Volume & Capacity Planning process across global manufacturing sites.
 
-First, run the development server:
+## 🚀 Features
+
+### 1. **Site Overview Dashboard**
+- Comprehensive list of 10 manufacturing sites across LATAM, NA, EMEA, and APAC regions
+- Real-time status indicators (Submitted, Pending, Needs Review)
+- Water risk scoring system (1-5 scale)
+- Quick access to detailed site information
+
+### 2. **Volume Input Form**
+- Product SKU selection (Colgate Total, Max Fresh, Sensitive, elmex, meridol)
+- Quarterly volume planning (Q1-Q4)
+- Capacity utilization tracking
+- Notes and comments system
+- Form validation and submission
+
+### 3. **Puts & Takes Tracker**
+- Complete audit trail of volume adjustments
+- Multiple adjustment reasons:
+  - Product transfer
+  - Capacity expansion
+  - Demand change
+  - Supply issue
+- Historical tracking with timestamps
+- User attribution for accountability
+
+### 4. **Consolidation View**
+- Regional volume aggregation
+- Product category analysis
+- Interactive bar charts (Recharts)
+- Export to CSV functionality
+- Performance metrics and KPIs
+
+### 5. **Sustainability Integration**
+- Water risk scoring for each site
+- High-risk site flagging
+- Alerts for high volume + high water risk combinations
+- Carbon intensity placeholder (coming soon)
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Styling**: Tailwind CSS
+- **Charts**: Recharts
+- **Language**: TypeScript
+- **Data**: JSON mock data (no backend required)
+
+## 📦 Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/joseignaciosg/colgate-volume-capacity-demo.git
+
+# Navigate to the project directory
+cd colgate-volume-capacity-demo
+
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🌐 Deploy to Vercel
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Option 1: Vercel Dashboard (Recommended)
 
-## Learn More
+1. Go to [vercel.com](https://vercel.com)
+2. Sign in with your GitHub account
+3. Click "Add New Project"
+4. Import the `colgate-volume-capacity-demo` repository
+5. Vercel will automatically detect Next.js and configure the build settings
+6. Click "Deploy"
 
-To learn more about Next.js, take a look at the following resources:
+### Option 2: Vercel CLI
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Install Vercel CLI (if not already installed)
+npm install -g vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Login to Vercel
+vercel login
 
-## Deploy on Vercel
+# Deploy
+cd colgate-volume-capacity-demo
+vercel --prod
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎨 Design
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application uses Colgate's brand red (`#ED1C24`) as the primary accent color throughout the interface, maintaining a clean and professional design aesthetic.
+
+## 📊 Mock Data
+
+The application includes mock data for 10 manufacturing sites:
+
+- **LATAM**: Cali Plant (Colombia), São Bernardo (Brazil), Mexico City (Mexico)
+- **NA**: Morristown (USA)
+- **EMEA**: Anzio (Italy), Gebze (Turkey), Warsaw (Poland)
+- **APAC**: Guangzhou (China), Mumbai (India), Bangkok (Thailand)
+
+## 🔒 Security Note
+
+This is a demo application with mock data. For production use, implement:
+- Backend API with authentication
+- Database integration
+- Role-based access control
+- Data validation and sanitization
+- Audit logging
+
+## 📝 License
+
+This is a demo project for demonstration purposes.
+
+## 👤 Author
+
+Jose Ignacio Galindo
+- GitHub: [@joseignaciosg](https://github.com/joseignaciosg)
+
+---
+
+**Built with ❤️ for Colgate-Palmolive**
