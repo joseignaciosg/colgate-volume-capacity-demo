@@ -194,7 +194,7 @@ export default function SitePage() {
                           <select
                             value={row.sku}
                             onChange={(e) => updateSKU(row.id, e.target.value)}
-                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                            className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:ring-[#ED1C24] focus:border-[#ED1C24] bg-gray-50"
                           >
                             {skus.map((sku) => (
                               <option key={sku} value={sku}>
@@ -211,7 +211,7 @@ export default function SitePage() {
                               min="0"
                               value={row.volumes[month]}
                               onChange={(e) => updateVolume(row.id, month, e.target.value)}
-                              className="w-full px-2 py-1.5 text-sm text-center border border-gray-300 rounded focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                              className="w-full px-2 py-1.5 text-sm text-center border border-gray-300 rounded focus:ring-[#ED1C24] focus:border-[#ED1C24] bg-gray-50 placeholder-gray-500"
                               placeholder="0"
                             />
                           </td>
@@ -283,7 +283,7 @@ export default function SitePage() {
                     max="100"
                     value={capacityUtilization}
                     onChange={(e) => setCapacityUtilization(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24] bg-gray-50 placeholder-gray-500"
                     placeholder="0-100"
                   />
                 </div>
@@ -294,7 +294,7 @@ export default function SitePage() {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24]"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-[#ED1C24] focus:border-[#ED1C24] bg-gray-50 placeholder-gray-500"
                     placeholder="Add any relevant notes..."
                   />
                 </div>
